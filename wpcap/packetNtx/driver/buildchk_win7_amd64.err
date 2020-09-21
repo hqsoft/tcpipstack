@@ -1,0 +1,4 @@
+1>errors in directory e:\hqs\lsj_source\sf_dll\sf_dll\trunk\winpcap\packetntx\driver
+1>e:\hqs\lsj_source\sf_dll\sf_dll\trunk\winpcap\packetntx\driver\packet.c(73) : error C2146: syntax error : missing ')' before identifier 'WINPCAP_INSTANCE_KEY_WIDECHAR'
+1>e:\hqs\lsj_source\sf_dll\sf_dll\trunk\winpcap\packetntx\driver\packet.c(73) : error C2059: syntax error : ')'
+1>link : error LNK1181: cannot open input file 'e:\hqs\lsj_source\sf_dll\sf_dll\trunk\winpcap\packetntx\driver\objchk_win7_amd64\amd64\packet.obj'

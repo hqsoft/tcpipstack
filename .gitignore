@@ -243,3 +243,6 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/clienttest/tcpip_stack2
+/ref/mod
+/ref/mini_tcpstack/

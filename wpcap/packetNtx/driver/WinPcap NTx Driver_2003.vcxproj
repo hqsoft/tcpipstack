@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>WinPcap NTx Driver</ProjectName>
+    <ProjectGuid>{5E91F1EF-C30E-43F7-9187-E37A0BDA7FDB}</ProjectGuid>
+    <Keyword>MakeFileProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="bucket_lookup.c" />
+    <ClCompile Include="count_packets.c" />
+    <ClCompile Include="dump.c" />
+    <ClCompile Include="functions.c" />
+    <ClCompile Include="jitter.c" />
+    <ClCompile Include="normal_lookup.c" />
+    <ClCompile Include="Openclos.c" />
+    <ClCompile Include="Packet.c" />
+    <ClCompile Include="Read.c" />
+    <ClCompile Include="tcp_session.c" />
+    <ClCompile Include="tme.c" />
+    <ClCompile Include="win_bpf_filter.c" />
+    <ClCompile Include="win_bpf_filter_init.c" />
+    <ClCompile Include="Write.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="bucket_lookup.h" />
+    <ClInclude Include="count_packets.h" />
+    <ClInclude Include="..\..\Common\dagc.h" />
+    <ClInclude Include="Debug.h" />
+    <ClInclude Include="..\..\Common\Devioctl.h" />
+    <ClInclude Include="functions.h" />
+    <ClInclude Include="jitter.h" />
+    <ClInclude Include="memory_t.h" />
+    <ClInclude Include="normal_lookup.h" />
+    <ClInclude Include="..\..\Common\Ntddndis.h" />
+    <ClInclude Include="..\..\Common\Ntddpack.h" />
+    <ClInclude Include="Packet.h" />
+    <ClInclude Include="..\..\Common\Packet32.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="tcp_session.h" />
+    <ClInclude Include="time_calls.h" />
+    <ClInclude Include="tme.h" />
+    <ClInclude Include="valid_insns.h" />
+    <ClInclude Include="win_bpf.h" />
+    <ClInclude Include="win_bpf_filter_init.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Compile2k.bat" />
+    <None Include="..\CompileNT4.bat" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

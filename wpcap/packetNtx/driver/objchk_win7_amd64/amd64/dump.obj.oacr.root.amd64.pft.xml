@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+<OACRDEFECTCOUNT>2</OACRDEFECTCOUNT>
+<OACRERRORCOUNT>0</OACRERRORCOUNT>
+<DEFECT _seq="1"><SFA><LINE>237</LINE><COLUMN>6</COLUMN><FILENAME>dump.c</FILENAME><FILEPATH>d:\source\fengxunplugin\wpcap\packetntx\driver\</FILEPATH></SFA><DEFECTCODE>28155</DEFECTCODE><DESCRIPTION>The function being assigned or passed should be a KSTART_ROUTINE function:  Add the declaration 'KSTART_ROUTINE NPF_DumpThread;' before the current first declaration of NPF_DumpThread.</DESCRIPTION><FUNCTION>NPF_StartDump</FUNCTION><FUNCLINE>156</FUNCLINE><PATH/></DEFECT>
+<DEFECT _seq="2"><SFA><LINE>592</LINE><COLUMN>32</COLUMN><FILENAME>dump.c</FILENAME><FILEPATH>d:\source\fengxunplugin\wpcap\packetntx\driver\</FILEPATH></SFA><DEFECTCODE>28155</DEFECTCODE><DESCRIPTION>The function being assigned or passed should be a IO_COMPLETION_ROUTINE function:  Add the declaration 'IO_COMPLETION_ROUTINE PacketDumpCompletion;' before the current first declaration of PacketDumpCompletion.</DESCRIPTION><FUNCTION>NPF_WriteDumpFile</FUNCTION><FUNCLINE>550</FUNCLINE><PATH/></DEFECT>
+</DEFECTS>

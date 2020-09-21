@@ -1,0 +1,21 @@
+
+
+AMD64_OBJECTS=\
+ $(OBJ_PATH)\$O\packet.obj \
+ $(OBJ_PATH)\$O\openclos.obj \
+ $(OBJ_PATH)\$O\read.obj \
+ $(OBJ_PATH)\$O\write.obj \
+ $(OBJ_PATH)\$O\dump.obj \
+ $(OBJ_PATH)\$O\win_bpf_filter.obj \
+
+
+
+
+
+# lowercased
+BASEDIR=c:\winddk\7600.16385.1
+OBJECT_ROOT=c:\winddk\7600.16385.1
+MAKEDIR_LOWERCASE=d:\source\fengxunplugin\wpcap\packetntx\driver
+OBJ_PATH=d:\source\fengxunplugin\wpcap\packetntx\driver
+CONCURRENT_MIDL=0
+CONCURRENT_MANIFEST_BUILD=0
