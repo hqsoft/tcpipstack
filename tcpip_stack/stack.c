@@ -378,8 +378,6 @@ int tcp_establish(stack_t * stack, uint32_t tcphash, packet_t * packet, tcp_list
 	
 	connection->on_establish(listener, connection);
 	connection->info.state = TCP_CONNECTION_ESTABLISHED;
-
-	//tcp_recv_next_add(connection, packet_tcp_payload_size(packet));
 	
 
 	return 0;
@@ -771,46 +769,53 @@ int tcp_inpput(stack_t * stack, packet_t * packet)
 
 		return -1;
 	}
-	
 
-	//add_timer(stack, connection, 2000);
+
 	n = packet_tcp_payload_size(packet);
-	if (connection->info.recv_next.u.integer_value == htonl(htonl(tcphdr->seq) + n))
-	{
-		//it was a handled retransmit packet , should be dropped
-		return -1;
-	}
+	//if (connection->info.recv_next.u.integer_value == htonl(htonl(tcphdr->seq) + n))
+	//{
+	//	//it is a retransmit packet , should be dropped
+	//	return -1;
+	//}
 	switch (connection->info.state)
 	{
-	//case TCP_CONNECTION_SYN_SENT:
-	//{
-	//	if (tcphdr->ack)
-	//	{
-	//		tcp_parse_options(stack, connection, tcphdr);
-	//		tcp_establish(stack, tcphash, packet, NULL, connection);
-	//		send_ack(stack, connection, packet);
-	//		return 0;
-	//	}
-	//	else
-	//	{
-	//		connection->on_reset(connection);
-	//		HASH_DEL(stack->tcp_sessions, connection);
-	//		connection->info.state = TCP_CONNECTION_CLOSED;
-	//		free_connection(stack, connection);
-	//		send_reset(stack, packet);
-	//		return;
-	//	}
-	//}
-	//break;
-	case TCP_CONNECTION_LAST_ACK:
+	case TCP_CONNECTION_FIN_WAIT_1:
 	{
 		if (tcphdr->ack)
 		{
-			reset_timer(stack, connection);
-			HASH_DEL(stack->tcp_sessions, connection);
-			connection->info.state = TCP_CONNECTION_CLOSED;
-			free_connection(stack, connection);
+			connection->info.state = TCP_CONNECTION_FIN_WAIT_2;
 		}
+		
+	}
+	break;
+	case TCP_CONNECTION_FIN_WAIT_2:
+	{
+		
+		if (tcphdr->fin)
+		{
+			//fixed me :  add timer to finalize this connection
+			connection->info.state = TCP_CONNECTION_LAST_ACK;
+			tcp_recv_next_add(connection, 1);
+
+			if (tcphdr->psh)
+			{
+				tcp_recv_next_add(connection, n);
+				if (n > 0)
+				{
+					connection->on_data(connection, packet_tcp_payload(packet), n);
+				}
+			}
+
+			send_ack(stack, connection, packet);
+		}
+		
+	}
+	break;
+
+	case TCP_CONNECTION_LAST_ACK:
+	{
+
+		send_ack(stack, connection, packet);
 	}
 	break;
 	case TCP_CONNECTION_ESTABLISHED:
@@ -975,12 +980,70 @@ void stack_init(stack_t * stack, char * hwaddr, unsigned int ip, uint32_t (*dev_
 	
 	rbtree_init(&stack->timer, &stack->sentinel, rbtree_insert_value);
 }
+int32_t stack_close(stack_t * stack, void * conn)
+{
+	tcp_session_hash_header_t * connection = (tcp_session_hash_header_t *)conn;
+	if (connection->info.state != TCP_CONNECTION_ESTABLISHED)
+	{
+		return -1;
+	}
+	packet_t *packet = alloc_packet(stack);
+	uint8_t dstdev[6] = { 0 };
+	packet_reserve(stack, packet, ETH_HDR_LEN + sizeof(iphdr_t) + sizeof(tcphdr_t));
+
+	tcphdr_t * new_tcphdr = (tcphdr_t*)packet_push(packet, sizeof(tcphdr_t));
+	memset(new_tcphdr, 0, sizeof(tcphdr_t));
+	new_tcphdr->ack_seq = connection->info.recv_next.u.integer_value;
+	new_tcphdr->seq = connection->info.send_next.u.integer_value;
+	
+	new_tcphdr->source = connection->info.dstport;
+	new_tcphdr->dest = connection->info.srcport;
+	new_tcphdr->fin = 1;
+	new_tcphdr->ack = 1;
+	new_tcphdr->window = 1;// connection->info.wndsize;
+	new_tcphdr->doff = ((sizeof(tcphdr_t)) / 4);
+	iphdr_t * new_iphdr = packet_push(packet, sizeof(iphdr_t));
+	memset(new_iphdr, 0, sizeof(iphdr_t));
+	new_iphdr->saddr = connection->info.dst;
+	new_iphdr->daddr = connection->info.src;
+	new_iphdr->ttl = stack->ttl;
+	new_iphdr->tot_len = htons(sizeof(iphdr_t) + sizeof(tcphdr_t));
+	new_iphdr->check = 0;
+	new_iphdr->check = ~ipchksum(new_iphdr);
+	new_iphdr->id = stack->ipid++;
+	new_iphdr->ihl = 5;
+	new_iphdr->version = 4;
+	new_iphdr->protocol = IP_PROTO_TCP;
+	new_iphdr->check = 0;
+	new_iphdr->check = ~ipchksum(new_iphdr);
+	new_tcphdr->check = ~upper_layer_chksum(new_iphdr, IP_PROTO_TCP);
+
+	stack->dev_lookup(new_iphdr->daddr, dstdev);
+
+
+
+	stack->verbose(stack_warning_level_1, "send tcp ack ");
+
+
+
+	send_packet(stack, packet, dstdev, ETH_P_IP);
+
+	tcp_send_next_add(connection, 1);
+
+	connection->info.state = TCP_CONNECTION_FIN_WAIT_1;
+
+	return 0;
+}
 int32_t stack_send(stack_t * stack, void * conn, void * data, int data_len)
 {
 	tcp_session_hash_header_t * connection = (tcp_session_hash_header_t *)conn;
-	packet_t *packet = alloc_packet(stack);
+	packet_t *packet = NULL;
 	uint8_t dstdev[6] = { 0 };
-
+	if (connection->info.state != TCP_CONNECTION_ESTABLISHED)
+	{
+		return -1;
+	}
+	packet = alloc_packet(stack);
 	packet_reserve(stack, packet, ETH_HDR_LEN + sizeof(iphdr_t) + sizeof(tcphdr_t) + data_len);
 	memcpy((void*)packet_push(packet, data_len), data, data_len);
 	tcphdr_t * new_tcphdr = (tcphdr_t*)packet_push(packet, sizeof(tcphdr_t));
@@ -992,7 +1055,7 @@ int32_t stack_send(stack_t * stack, void * conn, void * data, int data_len)
 	new_tcphdr->dest = connection->info.srcport;
 	new_tcphdr->ack = 1;
 	new_tcphdr->psh = 1;
-	new_tcphdr->window = 1;// connection->info.wndsize;
+	new_tcphdr->window = connection->info.wndsize;
 	new_tcphdr->doff = ((sizeof(tcphdr_t)) / 4);
 	iphdr_t * new_iphdr = packet_push(packet, sizeof(iphdr_t));
 	memset(new_iphdr, 0, sizeof(iphdr_t));

@@ -299,7 +299,10 @@ void stack_init(stack_t * stack, char * hwaddr, unsigned int ip, uint32_t(*dev_l
 
 int32_t stack_input(stack_t * stack, int8_t * data, uint16_t data_len);
 uint32_t stack_output(stack_t * stack);
+
+
 int32_t stack_send(stack_t * stack, void * sock, void * data, int data_len);
+int32_t stack_close(stack_t * stack, void * conn);
 #pragma pack(pop)
 
 #endif
